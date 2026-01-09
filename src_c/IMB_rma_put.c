@@ -49,7 +49,7 @@ For more documentation than found here, see
  IMB_rma_put_all_local;
  IMB_rma_exchange_put;
  IMB_rma_passive_put;
- 
+
  ***************************************************************************/
 
 #include "IMB_declare.h"
@@ -68,7 +68,7 @@ void IMB_rma_single_put(struct comm_info* c_info, int size,
     Type_Size s_size;
     int s_num = 0;
     int i;
-#ifdef CHECK 
+#ifdef CHECK
     int asize = (int) sizeof(assign_type);
     char *recv = (char *)c_info->r_buffer;
     defect = 0;
@@ -119,6 +119,7 @@ void IMB_rma_single_put(struct comm_info* c_info, int size,
         }
         MPI_Win_unlock(target, c_info->WIN);
     }
+
     /* Synchronize target and origin processes */
     MPI_Barrier(c_info->communicator);
 
@@ -129,7 +130,8 @@ void IMB_rma_single_put(struct comm_info* c_info, int size,
                      0, size, size, asize, put, 0, iterations->n_sample, i, target, &defect);
         }
     }
-#endif     
+#endif
+
     *time = res_time;
     return;
 }
@@ -173,6 +175,7 @@ void IMB_rma_put_all(struct comm_info* c_info, int size,
                 target = (peer + c_info->rank) % c_info->num_procs;
                 if (target == c_info->rank)
                     continue; /* do not put to itself*/
+
                 MPI_ERRHAND(MPI_Put((char*)c_info->s_buffer + i%iterations->s_cache_iter*iterations->s_offs,
                                     s_num, c_info->s_data_type, target,
                                     i%iterations->r_cache_iter*iterations->r_offs,
@@ -184,6 +187,7 @@ void IMB_rma_put_all(struct comm_info* c_info, int size,
 
         MPI_Win_unlock_all(c_info->WIN);
     }
+
     /* Synchronize origin and target processes */
     MPI_Barrier(c_info->communicator);
 
@@ -238,6 +242,7 @@ void IMB_rma_put_local(struct comm_info* c_info, int size,
         }
         MPI_Win_unlock(c_info->pair1, c_info->WIN);
     }
+
     /* Synchronize target and origin processes */
     MPI_Barrier(c_info->communicator);
 
@@ -292,6 +297,7 @@ void IMB_rma_put_all_local(struct comm_info* c_info, int size,
 
         MPI_Win_unlock_all(c_info->WIN);
     }
+
     /* Synchronize origin and target processes */
     MPI_Barrier(c_info->communicator);
 
@@ -311,7 +317,7 @@ void IMB_rma_exchange_put(struct comm_info* c_info, int size,
     Type_Size s_size;
     int s_num = 0;
     int i;
-#ifdef CHECK 
+#ifdef CHECK
     int asize = (int) sizeof(assign_type);
     char *recv = (char *)c_info->r_buffer;
     defect = 0;
@@ -343,7 +349,7 @@ void IMB_rma_exchange_put(struct comm_info* c_info, int size,
     res_time = MPI_Wtime();
     for (i = 0; i < iterations->n_sample; i++) {
         MPI_ERRHAND(MPI_Put((char*)c_info->s_buffer + i%iterations->s_cache_iter*iterations->s_offs,
-                            s_num, c_info->s_data_type, left, 
+                            s_num, c_info->s_data_type, left,
                             i%iterations->r_cache_iter*iterations->r_offs,
                             s_num, c_info->r_data_type, c_info->WIN));
 
@@ -378,7 +384,7 @@ void IMB_rma_exchange_put(struct comm_info* c_info, int size,
         CHK_DIFF("MPI_Put", c_info, (void*)(recv + i%iterations->r_cache_iter*iterations->r_offs),
                  0, size, size, asize, put, 0, iterations->n_sample, i, right, &defect);
     }
-#endif     
+#endif
 
     *time = res_time;
     return;
