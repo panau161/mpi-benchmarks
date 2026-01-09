@@ -39,11 +39,11 @@ For more documentation than found here, see
     In 
     doc/IMB_Users_Guide.pdf
     
- File: IMB_rma_put.c 
+ File: IMB_rma_put_single.c 
 
  Implemented functions: 
 
- IMB_rma_single_put;
+ IMB_rma_put_single;
  IMB_rma_put_all;
  IMB_rma_put_local;
  IMB_rma_put_all_local;
@@ -57,11 +57,14 @@ For more documentation than found here, see
 #include "IMB_prototypes.h"
 
 
-/* Unidirectional and bidirectional put: communication is done
- * between two processes only. */
-void IMB_rma_single_put(struct comm_info* c_info, int size,
-                        struct iter_schedule* iterations,
-                        MODES run_mode, double* time) {
+/* Implements "Unidir_put" and "Bidir_put" benchmarks:
+ * Communication is done between two processes only.
+ * run_mode UNDIR (default) corresponds to "Unidir_put",
+ * run_mode BIDIR corresponds to "Bidir_put"
+ * */
+void IMB_rma_put_single(struct comm_info* c_info, int size,
+                 struct iter_schedule* iterations,
+                 MODES run_mode, double* time) {
     double res_time = -1.;
     int target = -1;
     int sender = 0;
@@ -138,7 +141,7 @@ void IMB_rma_single_put(struct comm_info* c_info, int size,
 
 /* Implements "One_put_all" and "all_put_all" benchmarks:
  * run_mode Collective corresponds to "All_put_all",
- * run_mode MultPassiveTransfer corresponds to "One_put_all"
+ * run_mode MultPassiveTransfer (default) corresponds to "One_put_all"
  * */
 void IMB_rma_put_all(struct comm_info* c_info, int size,
                      struct iter_schedule* iterations,
@@ -196,7 +199,7 @@ void IMB_rma_put_all(struct comm_info* c_info, int size,
 }
 
 /* Implements "Put_local" benchmark. One process puts some data
- * to the other and make sure of completion by MPI_Win_flush_local call
+ * to one other process and make sure of completion by MPI_Win_flush_local call
  * */
 void IMB_rma_put_local(struct comm_info* c_info, int size,
                        struct iter_schedule* iterations,
@@ -250,7 +253,7 @@ void IMB_rma_put_local(struct comm_info* c_info, int size,
     return;
 }
 
-/* Implements "put_all_local" benchmark. One process puts some data
+/* Implements "Put_all_local" benchmark. One process puts some data
  * to all other processes and make sure of completion by
  * MPI_Win_flush_local_all call
  * */
