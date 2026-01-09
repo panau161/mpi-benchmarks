@@ -57,7 +57,9 @@ char *DEFC[] = {
     "All_put_all",
     "All_get_all",
     "Put_local",
+    "Get_local",
     "Put_all_local",
+    "Get_all_local",
     "Exchange_put",
     "Exchange_get",
     "Accumulate",
@@ -70,9 +72,7 @@ char *DEFC[] = {
 };
 
 
-/* Get_local and Get_all_local are not included to the def
- * case, because they are supposed to be very similar to
- * Unidir_get and One_get_all correspondingly */
+/* Enable all benchmarks by default */
 char *ALLC[] = {
     "Unidir_put",
     "Unidir_get",
