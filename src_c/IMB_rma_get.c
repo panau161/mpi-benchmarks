@@ -138,6 +138,83 @@ void IMB_rma_get_single(struct comm_info* c_info, int size,
     return;
 }
 
+/* Implements a benchmark where processes communicate in pairs:
+ * The processes are divided in two partitions. Each process
+ * communicates with exactly one process from the other partition.
+ * Supports unidirectional and bidirectional communication.
+ * */
+void IMB_rma_get_bipart(struct comm_info* c_info, int size,
+                        struct iter_schedule* iterations,
+                        MODES run_mode, double* time) {
+    double res_time = -1.;
+    int partition_size = c_info->num_procs / 2;
+    int target = (c_info->rank + partition_size) % c_info->num_procs;
+    int receiver = 0;
+    Type_Size r_size;
+    int r_num = 0;
+    int i;
+    char *recv = (char *)c_info->r_buffer;
+#ifdef CHECK
+    int asize = (int) sizeof(assign_type);
+    defect = 0;
+#endif
+
+    if (c_info->rank < 0 || (c_info->num_procs % 2 != 0)) {
+        *time = res_time;
+        return;
+    }
+
+    if (c_info->rank < partition_size || run_mode->BIDIR)
+        receiver = 1;
+
+    MPI_Type_size(c_info->s_data_type, &r_size);
+    r_num = size / r_size;
+
+    for (i = 0; i < N_BARR; i++)
+        MPI_Barrier(c_info->communicator);
+
+    if (receiver) {
+        MPI_Win_lock(MPI_LOCK_SHARED, target, 0, c_info->WIN);
+        if (run_mode->AGGREGATE) {
+            res_time = MPI_Wtime();
+            for (i = 0; i < iterations->n_sample; i++) {
+                MPI_ERRHAND(MPI_Get((void*)(recv + i%iterations->r_cache_iter*iterations->r_offs),
+                                    r_num, c_info->r_data_type, target,
+                                    i%iterations->s_cache_iter*iterations->s_offs,
+                                    r_num, c_info->s_data_type, c_info->WIN));
+            }
+            MPI_ERRHAND(MPI_Win_flush(target, c_info->WIN));
+            res_time = (MPI_Wtime() - res_time) / iterations->n_sample;
+        } else if (!run_mode->AGGREGATE) {
+            res_time = MPI_Wtime();
+            for (i = 0; i < iterations->n_sample; i++) {
+                MPI_ERRHAND(MPI_Get((void*)(recv + i%iterations->r_cache_iter*iterations->r_offs),
+                                    r_num, c_info->r_data_type, target,
+                                    i%iterations->s_cache_iter*iterations->s_offs,
+                                    r_num, c_info->s_data_type, c_info->WIN));
+                MPI_ERRHAND(MPI_Win_flush(target, c_info->WIN));
+            }
+            res_time = (MPI_Wtime() - res_time) / iterations->n_sample;
+        }
+        MPI_Win_unlock(target, c_info->WIN);
+    }
+
+    /* Synchronize target and origin processes */
+    MPI_Barrier(c_info->communicator);
+
+#ifdef CHECK
+    if (receiver || run_mode->BIDIR) {
+        for (i = 0; i < ITER_MIN(iterations); i++) {
+            CHK_DIFF("MPI_Get", c_info, (void*)(recv + i%iterations->r_cache_iter*iterations->r_offs),
+                     0, size, size, asize, get, 0, iterations->n_sample, i, target, &defect);
+        }
+    }
+#endif
+
+    *time = res_time;
+    return;
+}
+
 /* Implements "One_get_all" and "All_get_all" benchmarks:
  * run_mode Collective corresponds to "All_get_all",
  * run_mode MultPassiveTransfer (default) corresponds to "One_get_all"
