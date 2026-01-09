@@ -125,6 +125,7 @@ BENCHMARK(IMB_rma_put_local, Put_local)
 
 BENCHMARK(IMB_rma_get_local, Get_local)
 {
+    descr->flags.insert(DEFAULT);
     descr->flags.insert(SENDBUF_SIZE_I);
     descr->flags.insert(RECVBUF_SIZE_I);
     descr->flags.insert(SINGLE_TRANSFER);
@@ -146,6 +147,7 @@ BENCHMARK(IMB_rma_put_all_local, Put_all_local)
 
 BENCHMARK(IMB_rma_get_all_local, Get_all_local)
 {
+    descr->flags.insert(DEFAULT);
     descr->flags.insert(SENDBUF_SIZE_I);
     descr->flags.insert(RECVBUF_SIZE_I);
     descr->flags.insert(MULT_PASSIVE_TRANSFER);
