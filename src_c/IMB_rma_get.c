@@ -43,7 +43,7 @@ For more documentation than found here, see
 
  Implemented functions: 
 
- IMB_rma_single_get;
+ IMB_rma_get;
  IMB_rma_get_all;
  IMB_rma_get_local;
  IMB_rma_get_all_local;
@@ -56,11 +56,14 @@ For more documentation than found here, see
 #include "IMB_prototypes.h"
 
 
-/* Unidirectional and bidirectional get: communication is done
- * between two processes only. */
-void IMB_rma_single_get(struct comm_info* c_info, int size,
-                        struct iter_schedule* iterations,
-                        MODES run_mode, double* time) {
+/* Implements "Unidir_get" and "Bidir_get" benchmarks:
+ * Communication is done between two processes only.
+ * run_mode UNDIR (default) corresponds to "Unidir_get",
+ * run_mode BIDIR corresponds to "Bidir_get"
+ * */
+void IMB_rma_get(struct comm_info* c_info, int size,
+                 struct iter_schedule* iterations,
+                 MODES run_mode, double* time) {
     double res_time = -1.;
     int target = -1;
     int receiver = 0;
@@ -137,7 +140,7 @@ void IMB_rma_single_get(struct comm_info* c_info, int size,
 
 /* Implements "One_get_all" and "All_get_all" benchmarks:
  * run_mode Collective corresponds to "All_get_all",
- * run_mode MultPassiveTransfer corresponds to "One_get_all"
+ * run_mode MultPassiveTransfer (default) corresponds to "One_get_all"
  * */
 void IMB_rma_get_all(struct comm_info* c_info, int size,
                      struct iter_schedule* iterations,
@@ -196,7 +199,7 @@ void IMB_rma_get_all(struct comm_info* c_info, int size,
 }
 
 /* Implements "Get_local" benchmark. One process gets some data
- * from the other and make sure of completion by MPI_Win_flush_local call
+ * from one other process and make sure of completion by MPI_Win_flush_local call
  * */
 void IMB_rma_get_local(struct comm_info* c_info, int size,
                        struct iter_schedule* iterations,
@@ -265,7 +268,7 @@ void IMB_rma_get_local(struct comm_info* c_info, int size,
     return;
 }
 
-/* Implements "get_all_local" benchmark. One process gets some data
+/* Implements "Get_all_local" benchmark. One process gets some data
  * from all other processes and make sure of completion by
  * MPI_Win_flush_local_all call
  * */

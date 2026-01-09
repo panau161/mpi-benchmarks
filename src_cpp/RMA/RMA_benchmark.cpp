@@ -61,7 +61,7 @@ template class OriginalBenchmark<BenchmarkSuite<BS_RMA>, BMRK_FN>; \
 template<> bool OriginalBenchmark<BenchmarkSuite<BS_RMA>, BMRK_FN>::init_description() 
 
 
-BENCHMARK(IMB_rma_single_put, Unidir_put)
+BENCHMARK(IMB_rma_put, Unidir_put)
 {
     descr->flags.insert(DEFAULT);
     descr->flags.insert(SENDBUF_SIZE_I);
@@ -73,7 +73,7 @@ BENCHMARK(IMB_rma_single_put, Unidir_put)
 
 void IMB_rma_Bidir_put(struct comm_info* c_info, int size,
                       struct iter_schedule* ITERATIONS, MODES RUN_MODE, double* time) {
-    IMB_rma_single_put(c_info, size, ITERATIONS, RUN_MODE, time);
+    IMB_rma_put(c_info, size, ITERATIONS, RUN_MODE, time);
 }
 
 BENCHMARK(IMB_rma_Bidir_put, Bidir_put)
@@ -87,7 +87,7 @@ BENCHMARK(IMB_rma_Bidir_put, Bidir_put)
     return true;
 }
 
-BENCHMARK(IMB_rma_single_get, Unidir_get)
+BENCHMARK(IMB_rma_get, Unidir_get)
 {
     descr->flags.insert(DEFAULT);
     descr->flags.insert(SENDBUF_SIZE_I);
@@ -99,7 +99,7 @@ BENCHMARK(IMB_rma_single_get, Unidir_get)
 
 void IMB_rma_Bidir_get(struct comm_info* c_info, int size,
                       struct iter_schedule* ITERATIONS, MODES RUN_MODE, double* time) {
-    IMB_rma_single_get(c_info, size, ITERATIONS, RUN_MODE, time);
+    IMB_rma_get(c_info, size, ITERATIONS, RUN_MODE, time);
 }
 
 BENCHMARK(IMB_rma_Bidir_get, Bidir_get)

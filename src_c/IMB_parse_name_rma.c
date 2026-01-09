@@ -106,22 +106,22 @@ void IMB_set_bmark(struct Bench* bmark) {
 
 
     if (!strcmp(bmark->name, "unidir_put")) {
-        bmark->Benchmark = IMB_rma_single_put;
+        bmark->Benchmark = IMB_rma_put;
         type = SingleTransfer;
         bmark->access = put;
     } else if (!strcmp(bmark->name, "unidir_get")) {
-        bmark->Benchmark = IMB_rma_single_get;
+        bmark->Benchmark = IMB_rma_get;
         type = SingleTransfer;
         bmark->access = get;
     } else if (!strcmp(bmark->name, "bidir_put")) {
-        bmark->Benchmark = IMB_rma_single_put;
+        bmark->Benchmark = IMB_rma_put;
         type = SingleTransfer;
         bmark->access = put;
         bmark->RUN_MODES[0].BIDIR = 1;
         bmark->RUN_MODES[1].BIDIR = 1;
 
     } else if (!strcmp(bmark->name, "bidir_get")) {
-        bmark->Benchmark = IMB_rma_single_get;
+        bmark->Benchmark = IMB_rma_get;
         type = SingleTransfer;
         bmark->access = get;
         bmark->RUN_MODES[0].BIDIR = 1;
