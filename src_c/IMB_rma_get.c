@@ -76,6 +76,11 @@ void IMB_rma_get(struct comm_info* c_info, int size,
     defect = 0;
 #endif
 
+    if (c_info->rank < 0) {
+        *time = res_time;
+        return;
+    }
+
     if (c_info->rank == c_info->pair0) {
         target = c_info->pair1;
         receiver = 1;
@@ -85,9 +90,6 @@ void IMB_rma_get(struct comm_info* c_info, int size,
             /* pair1 acts as origin in bidirectional mode only */
             receiver = 1;
         }
-    } else if (c_info->rank < 0) {
-        *time = res_time;
-        return;
     }
 
     MPI_Type_size(c_info->s_data_type, &r_size);
