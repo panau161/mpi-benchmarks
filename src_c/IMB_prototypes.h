@@ -351,11 +351,11 @@ void IMB_ibarrier_pure(struct comm_info* c_info,
 
 #ifdef RMA
 
-void IMB_rma_single_put(struct comm_info* c_info, int size,
+void IMB_rma_put_single(struct comm_info* c_info, int size,
                         struct iter_schedule* ITERATIONS,
                         MODES RUN_MODE, double* time);
 
-void IMB_rma_single_get(struct comm_info* c_info, int size,
+void IMB_rma_get_single(struct comm_info* c_info, int size,
                         struct iter_schedule* ITERATIONS,
                         MODES RUN_MODE, double* time);
 
