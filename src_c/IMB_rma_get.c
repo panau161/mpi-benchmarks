@@ -56,8 +56,8 @@ For more documentation than found here, see
 #include "IMB_prototypes.h"
 
 
-/* Unidirectional and bidirectional get: communication is done 
- * between two processes only. */ 
+/* Unidirectional and bidirectional get: communication is done
+ * between two processes only. */
 void IMB_rma_single_get(struct comm_info* c_info, int size,
                         struct iter_schedule* iterations,
                         MODES run_mode, double* time) {
@@ -68,7 +68,7 @@ void IMB_rma_single_get(struct comm_info* c_info, int size,
     int r_num = 0;
     int i;
     char *recv = (char *)c_info->r_buffer;
-#ifdef CHECK 
+#ifdef CHECK
     int asize = (int) sizeof(assign_type);
     defect = 0;
 #endif
@@ -79,8 +79,7 @@ void IMB_rma_single_get(struct comm_info* c_info, int size,
     } else if (c_info->rank == c_info->pair1) {
         target = c_info->pair0;
         if (run_mode->BIDIR) {
-            /* pair1 acts as origin
-             * in bidirectional mode only */
+            /* pair1 acts as origin in bidirectional mode only */
             receiver = 1;
         }
     } else if (c_info->rank < 0) {
@@ -88,14 +87,12 @@ void IMB_rma_single_get(struct comm_info* c_info, int size,
         return;
     }
 
-    /* Get size: recv and send sizes are equial, so just use one set of vars*/
     MPI_Type_size(c_info->s_data_type, &r_size);
     r_num = size / r_size;
 
     for (i = 0; i < N_BARR; i++)
         MPI_Barrier(c_info->communicator);
 
-    /* in case of MPI_Get sender is target */
     if (receiver) {
         MPI_Win_lock(MPI_LOCK_SHARED, target, 0, c_info->WIN);
         if (run_mode->AGGREGATE) {
@@ -115,7 +112,6 @@ void IMB_rma_single_get(struct comm_info* c_info, int size,
                                     r_num, c_info->r_data_type, target,
                                     i%iterations->s_cache_iter*iterations->s_offs,
                                     r_num, c_info->s_data_type, c_info->WIN));
-
                 MPI_ERRHAND(MPI_Win_flush(target, c_info->WIN));
             }
             res_time = (MPI_Wtime() - res_time) / iterations->n_sample;
@@ -133,11 +129,11 @@ void IMB_rma_single_get(struct comm_info* c_info, int size,
                      0, size, size, asize, get, 0, iterations->n_sample, i, target, &defect);
         }
     }
-#endif     
+#endif
+
     *time = res_time;
     return;
 }
-
 
 /* Implements "One_get_all" and "All_get_all" benchmarks:
  * run_mode Collective corresponds to "All_get_all",
@@ -199,7 +195,6 @@ void IMB_rma_get_all(struct comm_info* c_info, int size,
     return;
 }
 
-
 /* Implements "Get_local" benchmark. One process gets some data
  * from the other and make sure of completion by MPI_Win_flush_local call
  * */
@@ -251,8 +246,10 @@ void IMB_rma_get_local(struct comm_info* c_info, int size,
         }
         MPI_Win_unlock(c_info->pair1, c_info->WIN);
     }
+
     /* Synchronize target and origin processes */
     MPI_Barrier(c_info->communicator);
+
 #ifdef CHECK
     if (c_info->rank == c_info->pair0) {
         /* Local completion of MPI_Get guarantees that recv buffer already contains target data,
@@ -262,7 +259,7 @@ void IMB_rma_get_local(struct comm_info* c_info, int size,
                      0, size, size, asize, get, 0, iterations->n_sample, i, c_info->pair1, &defect);
         }
     }
-#endif     
+#endif
 
     *time = res_time;
     return;
@@ -279,7 +276,7 @@ void IMB_rma_get_all_local(struct comm_info* c_info, int size,
     int target = 0;
     int peer = 0;
     Type_Size r_size;
-    int  r_num = 0;
+    int r_num = 0;
     int i;
     char *recv = (char *)c_info->r_buffer;
 
@@ -316,6 +313,7 @@ void IMB_rma_get_all_local(struct comm_info* c_info, int size,
 
         MPI_Win_unlock_all(c_info->WIN);
     }
+
     /* Synchronize origin and target processes */
     MPI_Barrier(c_info->communicator);
 
