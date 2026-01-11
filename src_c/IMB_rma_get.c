@@ -174,29 +174,19 @@ void IMB_rma_get_bipart(struct comm_info* c_info, int size,
         MPI_Barrier(c_info->communicator);
 
     if (receiver) {
-        MPI_Win_lock(MPI_LOCK_SHARED, target, 0, c_info->WIN);
-        if (run_mode->AGGREGATE) {
-            res_time = MPI_Wtime();
-            for (i = 0; i < iterations->n_sample; i++) {
-                MPI_ERRHAND(MPI_Get((void*)(recv + i%iterations->r_cache_iter*iterations->r_offs),
-                                    r_num, c_info->r_data_type, target,
-                                    i%iterations->s_cache_iter*iterations->s_offs,
-                                    r_num, c_info->s_data_type, c_info->WIN));
-            }
-            MPI_ERRHAND(MPI_Win_flush(target, c_info->WIN));
-            res_time = (MPI_Wtime() - res_time) / iterations->n_sample;
-        } else if (!run_mode->AGGREGATE) {
-            res_time = MPI_Wtime();
-            for (i = 0; i < iterations->n_sample; i++) {
-                MPI_ERRHAND(MPI_Get((void*)(recv + i%iterations->r_cache_iter*iterations->r_offs),
-                                    r_num, c_info->r_data_type, target,
-                                    i%iterations->s_cache_iter*iterations->s_offs,
-                                    r_num, c_info->s_data_type, c_info->WIN));
-                MPI_ERRHAND(MPI_Win_flush(target, c_info->WIN));
-            }
-            res_time = (MPI_Wtime() - res_time) / iterations->n_sample;
+        MPI_Win_lock_all(0, c_info->WIN);
+
+        res_time = MPI_Wtime();
+        for (i = 0; i < iterations->n_sample; i++) {
+            MPI_ERRHAND(MPI_Get((void*)(recv + i%iterations->r_cache_iter*iterations->r_offs),
+                                r_num, c_info->r_data_type, target,
+                                i%iterations->s_cache_iter*iterations->s_offs,
+                                r_num, c_info->s_data_type, c_info->WIN));
         }
-        MPI_Win_unlock(target, c_info->WIN);
+        MPI_ERRHAND(MPI_Win_flush_all(c_info->WIN));
+        res_time = (MPI_Wtime() - res_time) / iterations->n_sample;
+
+        MPI_Win_unlock_all(c_info->WIN);
     }
 
     /* Synchronize target and origin processes */
