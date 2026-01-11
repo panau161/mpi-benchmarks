@@ -82,6 +82,7 @@ void IMB_rma_put(struct comm_info* c_info, int size,
         return;
     }
 
+    /* non-Collective mode for one pair */
     if (c_info->rank == c_info->pair0) {
         target = c_info->pair1;
         sender = 1;
@@ -91,6 +92,18 @@ void IMB_rma_put(struct comm_info* c_info, int size,
             /* pair1 acts as origin in bidirectional mode only */
             sender = 1;
         }
+    }
+
+    /* Collective mode for multiple pairs between 2 partitions */
+    if (run_mode->type == Collective) {
+        if (c_info->num_procs % 2 != 0) {
+            *time = res_time;
+            return;
+        }
+        int partition_size = c_info->num_procs / 2;
+        target = (c_info->rank + partition_size) % c_info->num_procs;
+        if (c_info->rank < partition_size || run_mode->BIDIR)
+            sender = 1;
     }
 
     MPI_Type_size(c_info->s_data_type, &s_size);
