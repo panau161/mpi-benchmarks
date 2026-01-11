@@ -61,6 +61,7 @@ template class OriginalBenchmark<BenchmarkSuite<BS_RMA>, BMRK_FN>; \
 template<> bool OriginalBenchmark<BenchmarkSuite<BS_RMA>, BMRK_FN>::init_description() 
 
 
+/* single pair unidir/bidir benchmarks */
 BENCHMARK(IMB_rma_put, Unidir_put)
 {
     descr->flags.insert(DEFAULT);
@@ -113,6 +114,69 @@ BENCHMARK(IMB_rma_Bidir_get, Bidir_get)
     return true;
 }
 
+/* bipart pairs benchmarks */
+void IMB_rma_BiPart_Pairs_Unidir_put(struct comm_info* c_info, int size,
+                      struct iter_schedule* ITERATIONS, MODES RUN_MODE, double* time) {
+    IMB_rma_put(c_info, size, ITERATIONS, RUN_MODE, time);
+}
+BENCHMARK(IMB_rma_BiPart_Pairs_Unidir_put, BiPart_Pairs_Unidir_put)
+{
+    descr->flags.insert(DEFAULT);
+    descr->flags.insert(SENDBUF_SIZE_I);
+    descr->flags.insert(RECVBUF_SIZE_I);
+    descr->flags.insert(COLLECTIVE);
+    descr->flags.insert(PUT);
+    return true;
+}
+
+void IMB_rma_BiPart_Pairs_Bidir_put(struct comm_info* c_info, int size,
+                      struct iter_schedule* ITERATIONS, MODES RUN_MODE, double* time) {
+    IMB_rma_put(c_info, size, ITERATIONS, RUN_MODE, time);
+}
+
+BENCHMARK(IMB_rma_BiPart_Pairs_Bidir_put, BiPart_Pairs_Bidir_put)
+{
+    descr->flags.insert(DEFAULT);
+    descr->flags.insert(SENDBUF_SIZE_I);
+    descr->flags.insert(RECVBUF_SIZE_I);
+    descr->flags.insert(COLLECTIVE);
+    descr->flags.insert(BIDIR_1);
+    descr->flags.insert(PUT);
+    return true;
+}
+
+void IMB_rma_BiPart_Pairs_Unidir_get(struct comm_info* c_info, int size,
+                      struct iter_schedule* ITERATIONS, MODES RUN_MODE, double* time) {
+    IMB_rma_get(c_info, size, ITERATIONS, RUN_MODE, time);
+}
+
+BENCHMARK(IMB_rma_BiPart_Pairs_Unidir_get, BiPart_Pairs_Unidir_get)
+{
+    descr->flags.insert(DEFAULT);
+    descr->flags.insert(SENDBUF_SIZE_I);
+    descr->flags.insert(RECVBUF_SIZE_I);
+    descr->flags.insert(COLLECTIVE);
+    descr->flags.insert(GET);
+    return true;
+}
+
+void IMB_rma_BiPart_Pairs_Bidir_get(struct comm_info* c_info, int size,
+                      struct iter_schedule* ITERATIONS, MODES RUN_MODE, double* time) {
+    IMB_rma_get(c_info, size, ITERATIONS, RUN_MODE, time);
+}
+
+BENCHMARK(IMB_rma_BiPart_Pairs_Bidir_get, BiPart_Pairs_Bidir_get)
+{
+    descr->flags.insert(DEFAULT);
+    descr->flags.insert(SENDBUF_SIZE_I);
+    descr->flags.insert(RECVBUF_SIZE_I);
+    descr->flags.insert(COLLECTIVE);
+    descr->flags.insert(BIDIR_1);
+    descr->flags.insert(GET);
+    return true;
+}
+
+/* other */
 BENCHMARK(IMB_rma_put_local, Put_local)
 {
     descr->flags.insert(DEFAULT);
