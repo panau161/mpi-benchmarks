@@ -189,7 +189,7 @@ New in Intel(R) MPI Benchmarks 2018 Update 1
 New in Intel(R) MPI Benchmarks 2018
 --------------------------------------------
 - Product documentation is now available online only at:
-  https://www.intel.com/content/www/us/en/docs/mpi-library/user-guide-benchmarks/2021-2/overview.html 
+  https://www.intel.com/content/www/us/en/docs/mpi-library/user-guide-benchmarks/2021-2/overview.html
 - Removed support of the Intel(R) Xeon Phi(TM) coprocessors (formerly code named
   Knights Corner).
 

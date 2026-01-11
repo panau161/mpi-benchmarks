@@ -111,24 +111,20 @@ New in Intel(R) MPI Benchmarks 2021.2
 - Changed default window_size 64 -> 256
 - Bug fixes.
 
-
 New in Intel(R) MPI Benchmarks 2021.1
 ----------------------------------------
 - Added -window_size option for IMB-MPI1
 - Bug fixes.
-
 
 New in Intel(R) MPI Benchmarks 2021.1-beta05
 ----------------------------------------
 - Added copyrights for *.exe
 - Bug fixes.
 
-
 New in Intel(R) MPI Benchmarks 2021.1-beta02
 ----------------------------------------
 - New IMB-P2P Stencil2D and Stencil3D benchmarks.
 - Bug fixes.
-
 
 New in Intel(R) MPI Benchmarks 2021.1-beta01
 ----------------------------------------
@@ -142,7 +138,6 @@ New in Intel(R) MPI Benchmarks 2019 Update 3
 - Added a new benchmark Reduce_local for IMB-MPI1.
 - Bug fixes.
 
-
 New in Intel(R) MPI Benchmarks 2019 Update 2
 ----------------------------------------
 - New IMB-P2P benchmarks.
@@ -150,7 +145,6 @@ New in Intel(R) MPI Benchmarks 2019 Update 2
 - Deleted the alignment option (-alignment).
 - Bug fixes.
 - Code cleanup.
-
 
 New in Intel(R) MPI Benchmarks 2019 Update 1
 ----------------------------------------
@@ -160,7 +154,6 @@ New in Intel(R) MPI Benchmarks 2019 Update 1
 - Updated the following options:
     - -data_type now supports double.
     - -red_data_type now supports double.
-
 
 New in Intel(R) MPI Benchmarks 2019
 ----------------------------------------
@@ -273,7 +266,7 @@ Building Instructions for Linux* OS
    make IMB-NBC - build the executable file for IMB-NBC benchmarks
    make IMB-RMA - build the executable file for IMB-RMA benchmarks
    make all - build all executable files available
-   
+
 3) Run the benchmarks as follows:
 
    mpirun -n <number_of_processes> IMB-<component> [arguments]
