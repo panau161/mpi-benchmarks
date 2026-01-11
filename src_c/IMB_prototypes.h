@@ -359,6 +359,14 @@ void IMB_rma_get_single(struct comm_info* c_info, int size,
                         struct iter_schedule* ITERATIONS,
                         MODES RUN_MODE, double* time);
 
+void IMB_rma_put_bipart(struct comm_info* c_info, int size,
+                        struct iter_schedule* ITERATIONS,
+                        MODES RUN_MODE, double* time);
+
+void IMB_rma_get_bipart(struct comm_info* c_info, int size,
+                        struct iter_schedule* ITERATIONS,
+                        MODES RUN_MODE, double* time);
+
 void IMB_rma_put_all(struct comm_info* c_info, int size,
                      struct iter_schedule* iterations,
                      MODES run_mode, double* time);

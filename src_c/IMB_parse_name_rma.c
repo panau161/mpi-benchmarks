@@ -119,14 +119,38 @@ void IMB_set_bmark(struct Bench* bmark) {
         bmark->access = put;
         bmark->RUN_MODES[0].BIDIR = 1;
         bmark->RUN_MODES[1].BIDIR = 1;
-
     } else if (!strcmp(bmark->name, "bidir_get")) {
         bmark->Benchmark = IMB_rma_get_single;
         type = SingleTransfer;
         bmark->access = get;
         bmark->RUN_MODES[0].BIDIR = 1;
         bmark->RUN_MODES[1].BIDIR = 1;
-
+    } else if (!strcmp(bmark->name, "bipart_pairs_unidir_put")) {
+        bmark->N_Modes = 1;
+        bmark->Benchmark = IMB_rma_put_bipart;
+        type = Collective;
+        bmark->access = put;
+        bmark->RUN_MODES[0].AGGREGATE = -1;
+    } else if (!strcmp(bmark->name, "bipart_pairs_unidir_get")) {
+        bmark->N_Modes = 1;
+        bmark->Benchmark = IMB_rma_get_bipart;
+        type = Collective;
+        bmark->access = get;
+        bmark->RUN_MODES[0].AGGREGATE = -1;
+    } else if (!strcmp(bmark->name, "bipart_pairs_bidir_put")) {
+        bmark->N_Modes = 1;
+        bmark->Benchmark = IMB_rma_put_bipart;
+        type = Collective;
+        bmark->access = put;
+        bmark->RUN_MODES[0].AGGREGATE = -1;
+        bmark->RUN_MODES[0].BIDIR = 1;
+    } else if (!strcmp(bmark->name, "bipart_pairs_bidir_get")) {
+        bmark->N_Modes = 1;
+        bmark->Benchmark = IMB_rma_get_bipart;
+        type = Collective;
+        bmark->access = get;
+        bmark->RUN_MODES[0].AGGREGATE = -1;
+        bmark->RUN_MODES[0].BIDIR = 1;
     } else if (!strcmp(bmark->name, "put_local")) {
         bmark->Benchmark = IMB_rma_put_local;
         type = SingleTransfer;
