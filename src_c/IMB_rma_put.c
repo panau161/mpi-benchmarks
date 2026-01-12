@@ -304,11 +304,12 @@ void IMB_rma_put_all_bipart(struct comm_info* c_info, int size,
 
         res_time = MPI_Wtime();
         for (i = 0; i < iterations->n_sample; i++) {
-            for (peer = 0; peer < c_info->num_procs; peer++) {
-                /* choose different target for each process to avoid congestion */
-                target = (peer + c_info->rank) % c_info->num_procs;
-                if (target == c_info->rank)
-                    continue; /* do not put to itself*/
+            for (peer = 0; peer < partition_size; peer++) {
+                /* start with counterpart in the other partition to avoid congestion */
+                if (c_info->rank < partition_size)
+                    target = (peer + c_info->rank) % partition_size + partition_size;
+                else
+                    target = (peer + c_info->rank) % partition_size;
 
                 MPI_ERRHAND(MPI_Put((char*)c_info->s_buffer + i%iterations->s_cache_iter*iterations->s_offs,
                                     s_num, c_info->s_data_type, target,

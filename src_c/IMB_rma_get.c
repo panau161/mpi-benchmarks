@@ -307,7 +307,10 @@ void IMB_rma_get_all_bipart(struct comm_info* c_info, int size,
         for (i = 0; i < iterations->n_sample; i++) {
             for (peer = 0; peer < partition_size; peer++) {
                 /* start with counterpart in the other partition to avoid congestion */
-                target = (peer + c_info->rank + partition_size) % c_info->num_procs;
+                if (c_info->rank < partition_size)
+                    target = (peer + c_info->rank) % partition_size + partition_size;
+                else
+                    target = (peer + c_info->rank) % partition_size;
 
                 MPI_ERRHAND(MPI_Get((void*)(recv + i%iterations->r_cache_iter*iterations->r_offs),
                                     r_num, c_info->r_data_type, target,
