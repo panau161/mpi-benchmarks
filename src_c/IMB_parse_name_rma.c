@@ -195,6 +195,32 @@ void IMB_set_bmark(struct Bench* bmark) {
         type = Collective;
         bmark->access = get;
         bmark->RUN_MODES[0].AGGREGATE = -1;
+    } else if (!strcmp(bmark->name, "bipart_all_put_all_unidir")) {
+        bmark->N_Modes = 1;
+        bmark->Benchmark = IMB_rma_put_all_bipart;
+        type = Collective;
+        bmark->access = put;
+        bmark->RUN_MODES[0].AGGREGATE = -1;
+    } else if (!strcmp(bmark->name, "bipart_all_get_all_unidir")) {
+        bmark->N_Modes = 1;
+        bmark->Benchmark = IMB_rma_get_all_bipart;
+        type = Collective;
+        bmark->access = get;
+        bmark->RUN_MODES[0].AGGREGATE = -1;
+    } else if (!strcmp(bmark->name, "bipart_all_put_all_bidir")) {
+        bmark->N_Modes = 1;
+        bmark->Benchmark = IMB_rma_put_all_bipart;
+        type = Collective;
+        bmark->access = put;
+        bmark->RUN_MODES[0].AGGREGATE = -1;
+        bmark->RUN_MODES[0].BIDIR = 1;
+    } else if (!strcmp(bmark->name, "bipart_all_get_all_bidir")) {
+        bmark->N_Modes = 1;
+        bmark->Benchmark = IMB_rma_get_all_bipart;
+        type = Collective;
+        bmark->access = get;
+        bmark->RUN_MODES[0].AGGREGATE = -1;
+        bmark->RUN_MODES[0].BIDIR = 1;
     } else if (!strcmp(bmark->name, "exchange_put")) {
         bmark->N_Modes = 1;
         bmark->Benchmark = IMB_rma_exchange_put;

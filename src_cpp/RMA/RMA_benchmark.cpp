@@ -175,7 +175,7 @@ BENCHMARK(IMB_rma_BiPart_Pairs_Bidir_get, BiPart_Pairs_Bidir_get)
     return true;
 }
 
-/* other */
+/* local benchmarks */
 BENCHMARK(IMB_rma_put_local, Put_local)
 {
     descr->flags.insert(DEFAULT);
@@ -220,6 +220,7 @@ BENCHMARK(IMB_rma_get_all_local, Get_all_local)
     return true;
 }
 
+/* one-to-all and all-to-all benchmarks */
 BENCHMARK(IMB_rma_put_all, One_put_all)
 {
     descr->flags.insert(DEFAULT);
@@ -278,6 +279,68 @@ BENCHMARK(IMB_rma_All_get_all, All_get_all)
     return true;
 }
 
+/* bipart all-to-all benchmarks */
+BENCHMARK(IMB_rma_put_all_bipart, BiPart_All_Put_All_Unidir)
+{
+    descr->flags.insert(DEFAULT);
+    descr->flags.insert(SENDBUF_SIZE_I);
+    descr->flags.insert(RECVBUF_SIZE_I);
+    descr->flags.insert(COLLECTIVE);
+    descr->flags.insert(N_MODES_1);
+    descr->flags.insert(NON_AGGREGATE);
+    descr->flags.insert(PUT);
+    return true;
+}
+
+void IMB_rma_BiPart_All_Put_All_Bidir(struct comm_info* c_info, int size,
+                         struct iter_schedule* ITERATIONS, MODES RUN_MODE, double* time) {
+    IMB_rma_put_all_bipart(c_info, size, ITERATIONS, RUN_MODE, time);
+}
+
+BENCHMARK(IMB_rma_BiPart_All_Put_All_Bidir, BiPart_All_Put_All_Bidir)
+{
+    descr->flags.insert(DEFAULT);
+    descr->flags.insert(SENDBUF_SIZE_I);
+    descr->flags.insert(RECVBUF_SIZE_I);
+    descr->flags.insert(COLLECTIVE);
+    descr->flags.insert(N_MODES_1);
+    descr->flags.insert(NON_AGGREGATE);
+    descr->flags.insert(BIDIR_1);
+    descr->flags.insert(PUT);
+    return true;
+}
+
+BENCHMARK(IMB_rma_get_all_bipart, BiPart_All_Get_All_Unidir)
+{
+    descr->flags.insert(DEFAULT);
+    descr->flags.insert(SENDBUF_SIZE_I);
+    descr->flags.insert(RECVBUF_SIZE_I);
+    descr->flags.insert(COLLECTIVE);
+    descr->flags.insert(N_MODES_1);
+    descr->flags.insert(NON_AGGREGATE);
+    descr->flags.insert(GET);
+    return true;
+}
+
+void IMB_rma_BiPart_All_Get_All_Bidir(struct comm_info* c_info, int size,
+                         struct iter_schedule* ITERATIONS, MODES RUN_MODE, double* time) {
+    IMB_rma_get_all_bipart(c_info, size, ITERATIONS, RUN_MODE, time);
+}
+
+BENCHMARK(IMB_rma_BiPart_All_Get_All_Bidir, BiPart_All_Get_All_Bidir)
+{
+    descr->flags.insert(DEFAULT);
+    descr->flags.insert(SENDBUF_SIZE_I);
+    descr->flags.insert(RECVBUF_SIZE_I);
+    descr->flags.insert(COLLECTIVE);
+    descr->flags.insert(N_MODES_1);
+    descr->flags.insert(NON_AGGREGATE);
+    descr->flags.insert(BIDIR_1);
+    descr->flags.insert(GET);
+    return true;
+}
+
+/* other benchmarks */
 BENCHMARK(IMB_rma_exchange_put, Exchange_put)
 {
     descr->flags.insert(DEFAULT);

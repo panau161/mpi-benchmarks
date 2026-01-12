@@ -375,6 +375,14 @@ void IMB_rma_get_all(struct comm_info* c_info, int size,
                      struct iter_schedule* iterations,
                      MODES run_mode, double* time);
 
+void IMB_rma_put_all_bipart(struct comm_info* c_info, int size,
+                     struct iter_schedule* iterations,
+                     MODES run_mode, double* time);
+
+void IMB_rma_get_all_bipart(struct comm_info* c_info, int size,
+                     struct iter_schedule* iterations,
+                     MODES run_mode, double* time);
+
 void IMB_rma_put_local(struct comm_info* c_info, int size,
                        struct iter_schedule* iterations,
                        MODES run_mode, double* time);
