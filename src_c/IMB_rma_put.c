@@ -267,6 +267,68 @@ void IMB_rma_put_all(struct comm_info* c_info, int size,
     return;
 }
 
+/* Implements a bi-partitioned all-to-all benchmark:
+ * The processes are divided in two partitions. In unirectional mode (default),
+ * each process from the first partition communicates with all processes in the
+ * second partition. In bidirectional mode, all processes from both partitions
+ * communicate with all processes in the other partition.
+ * */
+void IMB_rma_put_all_bipart(struct comm_info* c_info, int size,
+                     struct iter_schedule* iterations,
+                     MODES run_mode, double* time) {
+    double res_time = -1.;
+    int partition_size = c_info->num_procs / 2;
+    int target = 0;
+    int peer = 0;
+    int sender = 0;
+    Type_Size s_size;
+    int s_num = 0;
+    int i;
+
+    if (c_info->rank < 0 || (c_info->num_procs % 2 != 0)) {
+        *time = res_time;
+        return;
+    }
+
+    if (c_info->rank < partition_size || run_mode->BIDIR)
+        sender = 1;
+
+    MPI_Type_size(c_info->s_data_type, &s_size);
+    s_num = size / s_size;
+
+    for (i = 0; i < N_BARR; i++)
+        MPI_Barrier(c_info->communicator);
+
+    if (sender) {
+        MPI_Win_lock_all(0, c_info->WIN);
+
+        res_time = MPI_Wtime();
+        for (i = 0; i < iterations->n_sample; i++) {
+            for (peer = 0; peer < c_info->num_procs; peer++) {
+                /* choose different target for each process to avoid congestion */
+                target = (peer + c_info->rank) % c_info->num_procs;
+                if (target == c_info->rank)
+                    continue; /* do not put to itself*/
+
+                MPI_ERRHAND(MPI_Put((char*)c_info->s_buffer + i%iterations->s_cache_iter*iterations->s_offs,
+                                    s_num, c_info->s_data_type, target,
+                                    i%iterations->r_cache_iter*iterations->r_offs,
+                                    s_num, c_info->r_data_type, c_info->WIN));
+            }
+        }
+        MPI_ERRHAND(MPI_Win_flush_all(c_info->WIN));
+        res_time = (MPI_Wtime() - res_time) / iterations->n_sample;
+
+        MPI_Win_unlock_all(c_info->WIN);
+    }
+
+    /* Synchronize origin and target processes */
+    MPI_Barrier(c_info->communicator);
+
+    *time = res_time;
+    return;
+}
+
 /* Implements "Put_local" benchmark. One process puts some data
  * to one other process and make sure of completion by MPI_Win_flush_local call
  * */
