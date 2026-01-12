@@ -139,6 +139,75 @@ void IMB_rma_put_single(struct comm_info* c_info, int size,
     return;
 }
 
+/* Implements a benchmark where processes communicate in pairs:
+ * The processes are divided in two partitions. Each process
+ * communicates with exactly one process from the other partition.
+ * Supports unidirectional and bidirectional communication.
+ * */
+void IMB_rma_put_bipart(struct comm_info* c_info, int size,
+                        struct iter_schedule* iterations,
+                        MODES run_mode, double* time) {
+    double res_time = -1.;
+    int partition_size = c_info->num_procs / 2;
+    int target = 0;
+    int sender = 0;
+    Type_Size s_size;
+    int s_num = 0;
+    int i;
+#ifdef CHECK
+    int asize = (int) sizeof(assign_type);
+char *recv = (char *)c_info->r_buffer;
+    defect = 0;
+#endif
+
+    if (c_info->rank < 0 || (c_info->num_procs % 2 != 0)) {
+        *time = res_time;
+        return;
+    }
+
+    target = (c_info->rank + partition_size) % c_info->num_procs;
+
+    if (c_info->rank < partition_size || run_mode->BIDIR)
+        sender = 1;
+
+    MPI_Type_size(c_info->s_data_type, &s_size);
+    s_num = size / s_size;
+
+    for (i = 0; i < N_BARR; i++)
+        MPI_Barrier(c_info->communicator);
+
+    if (sender) {
+        MPI_Win_lock_all(0, c_info->WIN);
+
+        res_time = MPI_Wtime();
+        for (i = 0; i < iterations->n_sample; i++) {
+            MPI_ERRHAND(MPI_Put((char*)c_info->s_buffer + i%iterations->s_cache_iter*iterations->s_offs,
+                                s_num, c_info->s_data_type, target,
+                                i%iterations->r_cache_iter*iterations->r_offs,
+                                s_num, c_info->r_data_type, c_info->WIN));
+        }
+        MPI_ERRHAND(MPI_Win_flush_all(c_info->WIN));
+        res_time = (MPI_Wtime() - res_time) / iterations->n_sample;
+
+        MPI_Win_unlock_all(c_info->WIN);
+    }
+
+    /* Synchronize target and origin processes */
+    MPI_Barrier(c_info->communicator);
+
+#ifdef CHECK
+    if (sender || run_mode->BIDIR) {
+        for (i = 0; i < ITER_MIN(iterations); i++) {
+            CHK_DIFF("MPI_Put", c_info, (void*)(recv + i%iterations->r_cache_iter*iterations->r_offs),
+                     0, size, size, asize, put, 0, iterations->n_sample, i, target, &defect);
+        }
+    }
+#endif
+
+    *time = res_time;
+    return;
+}
+
 /* Implements "One_put_all" and "all_put_all" benchmarks:
  * run_mode Collective corresponds to "All_put_all",
  * run_mode MultPassiveTransfer (default) corresponds to "One_put_all"
