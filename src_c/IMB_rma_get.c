@@ -148,7 +148,7 @@ void IMB_rma_get_bipart(struct comm_info* c_info, int size,
                         MODES run_mode, double* time) {
     double res_time = -1.;
     int partition_size = c_info->num_procs / 2;
-    int target = (c_info->rank + partition_size) % c_info->num_procs;
+    int target = 0;
     int receiver = 0;
     Type_Size r_size;
     int r_num = 0;
@@ -163,6 +163,8 @@ void IMB_rma_get_bipart(struct comm_info* c_info, int size,
         *time = res_time;
         return;
     }
+
+    target = (c_info->rank + partition_size) % c_info->num_procs;
 
     if (c_info->rank < partition_size || run_mode->BIDIR)
         receiver = 1;
